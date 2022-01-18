@@ -55,15 +55,15 @@ anychart.stockModule.math.aroon.startFunction = function(context) {
 /**
  * Aroon calculation.
  * @param {anychart.stockModule.math.aroon.Context} context Aroon Context.
- * @param {number} currHigh Current high value.
- * @param {number} currLow Current low value.
+ * @param {number} high High value.
+ * @param {number} low Low value.
  * @return {Array.<number>}
  */
- anychart.stockModule.math.aroon.calculate = function(context, currHigh, currLow) {
-  var missing = isNaN(currHigh) || isNaN(currLow);
+ anychart.stockModule.math.aroon.calculate = function(context, high, low) {
+  var missing = isNaN(high) || isNaN(low);
   if (!missing) {
-    context.highQueue.enqueue(currHigh);
-    context.lowQueue.enqueue(currLow);
+    context.highQueue.enqueue(high);
+    context.lowQueue.enqueue(low);
   }
 
   var queueLength = context.highQueue.getLength();
@@ -104,9 +104,9 @@ anychart.stockModule.math.aroon.startFunction = function(context) {
  * @this {anychart.stockModule.math.aroon.Context}
  */
 anychart.stockModule.math.aroon.calculationFunction = function(row, context) {
-  var currHigh = anychart.utils.toNumber(row.get('high'));
-  var currLow = anychart.utils.toNumber(row.get('low'));
-  var result = anychart.stockModule.math.aroon.calculate(context, currHigh, currLow);
+  var high = anychart.utils.toNumber(row.get('high'));
+  var low = anychart.utils.toNumber(row.get('low'));
+  var result = anychart.stockModule.math.aroon.calculate(context, high, low);
   row.set('upResult', result[0]);
   row.set('downResult', result[1]);
 };
