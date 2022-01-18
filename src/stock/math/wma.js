@@ -44,9 +44,7 @@ anychart.stockModule.math.wma.startFunction = function(context) {
 
 
 /**
- * Calculates next WMA value based on a previous WMA value and current data value.
- * To use this function you need a setup queue with length equal to period.
- * On first calculation pass NaN or nothing as a opt_prevResult.
+ * Calculates next WMA value.
  * @param {anychart.stockModule.math.wma.Context} context
  * @param {number} value
  * @return {number}
