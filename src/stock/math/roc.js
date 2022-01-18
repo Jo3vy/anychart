@@ -44,16 +44,16 @@ anychart.stockModule.math.roc.startFunction = function(context) {
 
 
 /**
- * Calculates ROC value.
+ * Calculates RoC value.
  * To use this function you need a setup queue with length equal to period.
  * @param {anychart.stockModule.math.roc.Context} context
- * @param {number} currValue
+ * @param {number} value
  * @return {number}
  */
-anychart.stockModule.math.roc.calculate = function(context, currValue) {
-  var missing = isNaN(currValue);
+anychart.stockModule.math.roc.calculate = function(context, value) {
+  var missing = isNaN(value);
   if (!missing)
-    context.queue.enqueue(currValue);
+    context.queue.enqueue(value);
   /** @type {number} */
   var result;
   if (missing || context.queue.getLength() <= context.period) {

@@ -24,14 +24,14 @@ anychart.stockModule.indicators.CoppockCurve = function(args) {
   this.wmaPeriod_ = anychart.utils.normalizeToNaturalNumber(args[2], 10, false);
 
   /**
-   * The first ROC period period.
+   * The first RoC period period.
    * @type {number}
    * @private
    */
   this.firstRocPeriod_ = anychart.utils.normalizeToNaturalNumber(args[3], 11, false);
 
   /**
-   * The second ROC period period.
+   * The second RoC period period.
    * @type {number}
    * @private
    */
@@ -85,7 +85,7 @@ anychart.stockModule.indicators.CoppockCurve.prototype.wmaPeriod = function(opt_
 
 
 /**
- * Getter and setter for the first ROC period.
+ * Getter and setter for the first RoC period.
  * @param {number=} opt_value
  * @return {anychart.stockModule.indicators.CoppockCurve|number}
  */
@@ -103,7 +103,7 @@ anychart.stockModule.indicators.CoppockCurve.prototype.wmaPeriod = function(opt_
 
 
 /**
- * Getter and setter for the second ROC period.
+ * Getter and setter for the second RoC period.
  * @param {number=} opt_value
  * @return {anychart.stockModule.indicators.CoppockCurve|number}
  */
