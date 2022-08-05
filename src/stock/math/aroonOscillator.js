@@ -10,10 +10,9 @@ goog.require('anychart.utils');
 
 /**
  * @typedef {{
+ *    highQueue: !anychart.stockModule.math.CycledQueue,
+ *    lowQueue: !anychart.stockModule.math.CycledQueue,
  *    period: number,
- *    aroonContext: anychart.stockModule.math.aroon.Context,
- *    aroonCalculate: Function,
- *    aroonStartFunction: Function,
  *    dispose: Function
  * }}
  */
@@ -27,18 +26,7 @@ anychart.stockModule.math.aroonOscillator.Context;
  */
 anychart.stockModule.math.aroonOscillator.initContext = function(opt_period) {
   var period = anychart.utils.normalizeToNaturalNumber(opt_period, 25, false);
-  return {
-    period: period,
-    aroonContext: anychart.stockModule.math.aroon.initContext(period),
-    aroonCalculate: anychart.stockModule.math.aroon.calculate,
-    aroonStartFunction: anychart.stockModule.math.aroon.startFunction,
-    /**
-     * @this {anychart.stockModule.math.aroonOscillator.Context}
-     */
-    'dispose': function() {
-      this.aroonContext['dispose']();
-    }
-  };
+  return anychart.stockModule.math.aroon.initContext(period);
 };
 
 
@@ -48,7 +36,27 @@ anychart.stockModule.math.aroonOscillator.initContext = function(opt_period) {
  * @this {anychart.stockModule.math.aroonOscillator.Context}
  */
 anychart.stockModule.math.aroonOscillator.startFunction = function(context) {
-  context.aroonStartFunction(/** @type {anychart.stockModule.math.aroon.Context} */ (context.aroonContext));
+  anychart.stockModule.math.aroon.startFunction(context);
+};
+
+
+/**
+ * Aroon Oscillator calculate method.
+ * @param {anychart.stockModule.math.aroonOscillator.Context} context Aroon Oscillator context.
+ * @param {number} high Current high value.
+ * @param {number} low Current low value.
+ * @return {number}
+ */
+anychart.stockModule.math.aroonOscillator.calculate = function(context, high, low) {
+  var aroonValues = anychart.stockModule.math.aroon.calculate(context, high, low);
+  var aroonUp = aroonValues[0];
+  var aroonDown = aroonValues[1];
+
+  if (isNaN(aroonUp) || isNaN(aroonDown)) {
+    return NaN;
+  } else {
+    return (aroonUp - aroonDown);
+  }
 };
 
 
@@ -61,15 +69,8 @@ anychart.stockModule.math.aroonOscillator.startFunction = function(context) {
 anychart.stockModule.math.aroonOscillator.calculationFunction = function(row, context) {
   var high = anychart.utils.toNumber(row.get('high'));
   var low = anychart.utils.toNumber(row.get('low'));
-  var aroonValues = context.aroonCalculate(context.aroonContext, high, low);
-  var aroonUp = aroonValues[0];
-  var aroonDown = aroonValues[1];
-  if (isNaN(aroonUp) || isNaN(aroonDown)) {
-    row.set('result', NaN);
-  } else {
-    var result = aroonUp - aroonDown;
-    row.set('result', result);
-  }
+  var result = anychart.stockModule.math.aroonOscillator.calculate(context, high, low);
+  row.set('result', result);
 };
 
 
@@ -92,5 +93,6 @@ anychart.stockModule.math.aroonOscillator.createComputer = function(mapping, opt
 //exports
 goog.exportSymbol('anychart.math.aroonOscillator.initContext', anychart.stockModule.math.aroonOscillator.initContext);
 goog.exportSymbol('anychart.math.aroonOscillator.startFunction', anychart.stockModule.math.aroonOscillator.startFunction);
+goog.exportSymbol('anychart.math.aroonOscillator.calculate', anychart.stockModule.math.aroonOscillator.calculationFunction);
 goog.exportSymbol('anychart.math.aroonOscillator.calculationFunction', anychart.stockModule.math.aroonOscillator.calculationFunction);
 goog.exportSymbol('anychart.math.aroonOscillator.createComputer', anychart.stockModule.math.aroonOscillator.createComputer);
