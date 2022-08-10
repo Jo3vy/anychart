@@ -35,7 +35,7 @@ anychart.stockModule.indicators.CoppockCurve = function(args) {
    * @type {number}
    * @private
    */
-     this.secondRocPeriod_ = anychart.utils.normalizeToNaturalNumber(args[4], 14, false);
+  this.secondRocPeriod_ = anychart.utils.normalizeToNaturalNumber(args[4], 14, false);
 
   this.declareSeries('main', args[5]);
   this.init();
@@ -89,7 +89,7 @@ anychart.stockModule.indicators.CoppockCurve.prototype.wmaPeriod = function(opt_
  * @param {number=} opt_value
  * @return {anychart.stockModule.indicators.CoppockCurve|number}
  */
- anychart.stockModule.indicators.CoppockCurve.prototype.firstRocPeriod = function(opt_value) {
+anychart.stockModule.indicators.CoppockCurve.prototype.firstRocPeriod = function(opt_value) {
   if (goog.isDef(opt_value)) {
     var period = anychart.utils.normalizeToNaturalNumber(opt_value, this.firstRocPeriod_, false);
     if (period != this.firstRocPeriod_) {
@@ -107,7 +107,7 @@ anychart.stockModule.indicators.CoppockCurve.prototype.wmaPeriod = function(opt_
  * @param {number=} opt_value
  * @return {anychart.stockModule.indicators.CoppockCurve|number}
  */
- anychart.stockModule.indicators.CoppockCurve.prototype.secondRocPeriod = function(opt_value) {
+anychart.stockModule.indicators.CoppockCurve.prototype.secondRocPeriod = function(opt_value) {
   if (goog.isDef(opt_value)) {
     var period = anychart.utils.normalizeToNaturalNumber(opt_value, this.secondRocPeriod_, false);
     if (period != this.secondRocPeriod_) {

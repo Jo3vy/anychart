@@ -11,14 +11,9 @@ goog.require('anychart.utils');
 
 /**
  * @typedef {{
- *    wmaPeriod: number,
  *    wmaContext: anychart.stockModule.math.wma.Context,
- *    wmaCalculate: Function,
- *    wmaStartFunction: Function,
  *    firstRocContext: anychart.stockModule.math.roc.Context,
  *    secondRocContext: anychart.stockModule.math.roc.Context,
- *    rocCalculate: Function,
- *    rocStartFunction: Function,
  *    dispose: Function
  * }}
  */
@@ -37,14 +32,9 @@ anychart.stockModule.math.coppockCurve.initContext = function(opt_wmaPeriod, opt
   var firstRocPeriod = anychart.utils.normalizeToNaturalNumber(opt_firstRocPeriod, 11, false);
   var secondRocPeriod = anychart.utils.normalizeToNaturalNumber(opt_secondRocPeriod, 14, false);
   return {
-    wmaPeriod: wmaPeriod,
     wmaContext: anychart.stockModule.math.wma.initContext(wmaPeriod),
-    wmaCalculate: anychart.stockModule.math.wma.calculate,
-    wmaStartFunction: anychart.stockModule.math.wma.startFunction,
     firstRocContext: anychart.stockModule.math.roc.initContext(firstRocPeriod),
     secondRocContext: anychart.stockModule.math.roc.initContext(secondRocPeriod),
-    rocCalculate: anychart.stockModule.math.roc.calculate,
-    rocStartFunction: anychart.stockModule.math.roc.startFunction,
     /**
      * @this {anychart.stockModule.math.coppockCurve.Context}
      */
@@ -63,9 +53,32 @@ anychart.stockModule.math.coppockCurve.initContext = function(opt_wmaPeriod, opt
  * @this {anychart.stockModule.math.coppockCurve.Context}
  */
 anychart.stockModule.math.coppockCurve.startFunction = function(context) {
-  context.wmaStartFunction(/** @type {anychart.stockModule.math.wma.Context} */ (context.wmaContext));
-  context.rocStartFunction(/** @type {anychart.stockModule.math.roc.Context} */ (context.firstRocContext));
-  context.rocStartFunction(/** @type {anychart.stockModule.math.roc.Context} */ (context.secondRocContext));
+  anychart.stockModule.math.wma.startFunction(context.wmaContext);
+  anychart.stockModule.math.roc.startFunction(context.firstRocContext);
+  anychart.stockModule.math.roc.startFunction(context.secondRocContext);
+};
+
+
+/**
+ * Calculates Coppock Curve.
+ * @param {anychart.stockModule.math.coppockCurve.Context} context
+ * @param {number} value
+ * @return {number}
+ */
+anychart.stockModule.math.coppockCurve.calculate = function(context, value) {
+  var firstRocValue = anychart.stockModule.math.roc.calculate(context.firstRocContext, value);
+  var secondRocValue = anychart.stockModule.math.roc.calculate(context.secondRocContext, value);
+  if (isNaN(firstRocValue) || isNaN(secondRocValue)) {
+    return NaN;
+  } else {
+    var rocSum = firstRocValue + secondRocValue;
+    var wmaValue = anychart.stockModule.math.wma.calculate(context.wmaContext, rocSum);
+    if (isNaN(wmaValue)) {
+      return NaN;
+    } else {
+      return wmaValue;
+    }
+  }
 };
 
 
@@ -79,20 +92,8 @@ anychart.stockModule.math.coppockCurve.calculationFunction = function(row, conte
   var value = row.get('value');
   value = goog.isDef(value) ? value : row.get('close');
   value = anychart.utils.toNumber(value);
-  var firstRocValue = context.rocCalculate(context.firstRocContext, value);
-  var secondRocValue = context.rocCalculate(context.secondRocContext, value);
-
-  if (isNaN(firstRocValue) || isNaN(secondRocValue)) {
-    row.set('result', NaN);
-  } else {
-    var rocSum = firstRocValue + secondRocValue;
-    var wmaValue = context.wmaCalculate(context.wmaContext, rocSum);
-    if (isNaN(wmaValue)) {
-      row.set('result', NaN);
-    } else {
-      row.set('result', wmaValue);
-    }
-  }
+  var result = anychart.stockModule.math.coppockCurve.calculate(context, value);
+  row.set('result', result);
 };
 
 
@@ -117,5 +118,6 @@ anychart.stockModule.math.coppockCurve.createComputer = function(mapping, opt_wm
 //exports
 goog.exportSymbol('anychart.math.coppockCurve.initContext', anychart.stockModule.math.coppockCurve.initContext);
 goog.exportSymbol('anychart.math.coppockCurve.startFunction', anychart.stockModule.math.coppockCurve.startFunction);
+goog.exportSymbol('anychart.math.coppockCurve.calculate', anychart.stockModule.math.coppockCurve.calculate);
 goog.exportSymbol('anychart.math.coppockCurve.calculationFunction', anychart.stockModule.math.coppockCurve.calculationFunction);
 goog.exportSymbol('anychart.math.coppockCurve.createComputer', anychart.stockModule.math.coppockCurve.createComputer);
